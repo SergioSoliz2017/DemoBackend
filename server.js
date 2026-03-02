@@ -32,7 +32,7 @@ app.post("/ai-response", async (req, res) => {
       "https://api.deepseek.com/chat/completions",
       {
         model: "deepseek-chat",
-        max_tokens: 80, 
+        max_tokens: 80,
         temperature: 0.5,
         messages: [
           {
@@ -69,8 +69,15 @@ app.post("/ai-response", async (req, res) => {
           "Content-Type": "application/json",
         },
         responseType: "arraybuffer",
+        validateStatus: () => true,
       },
     );
+
+    if (tts.headers["content-type"].includes("application/json")) {
+      const errorText = Buffer.from(tts.data).toString("utf8");
+      console.error("Error Eleven:", errorText);
+      return res.status(500).json({ error: "ElevenLabs error" });
+    }
     res.set("Content-Type", "audio/mpeg");
     res.send(tts.data);
   } catch (err) {
