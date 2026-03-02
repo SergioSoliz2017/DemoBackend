@@ -24,7 +24,6 @@ app.get("/get-token", async (req, res) => {
   const jwt = await at.toJwt();
   res.json({ token: jwt });
 });
-
 app.post("/ai-response", async (req, res) => {
   try {
     const { text } = req.body;
@@ -33,10 +32,17 @@ app.post("/ai-response", async (req, res) => {
       "https://api.deepseek.com/chat/completions",
       {
         model: "deepseek-chat",
+        max_tokens: 80, 
+        temperature: 0.5,
         messages: [
           {
             role: "system",
-            content: "Eres un agente profesional de call center.",
+            content: `
+        Eres un agente profesional de call center.
+        Responde de forma corta, clara y directa.
+        Máximo 2 oraciones.
+        No des explicaciones largas.
+        `,
           },
           { role: "user", content: text },
         ],
